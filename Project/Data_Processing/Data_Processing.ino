@@ -55,15 +55,15 @@ void loop() {
 
   // Maquina de estados
   // Cálculo de la derivada 
-  dAcel = (za - za[i]) / tiempo_interrupcion;  // derivada subiendo o bajando < 1000
-  dGiro = (yg - yg[i]) / tiempo_interrupcion;  // derivada arriba o en reposo < 1000
+  dAcel = (za - za_vec[i]) / tiempo_interrupcion;  // derivada subiendo o bajando < 1000
+  dGiro = (yg - yg_vec[i]) / tiempo_interrupcion;  // derivada arriba o en reposo < 1000
 
   // Estado 1: Reposo (Cuando la derivada de la aceleracion es 0 y aceleracion no supera un umbral por arriba (th1) y por abajo (th2))
   if (dGiro < 1000 || estado == 1) {
     s = 0;
     a = 0;
     if (p != 0) {
-      tiempo_permanencia = p * t_interrupcion;
+      tiempo_permanencia = p * tiempo_interrupcion;
     }
     p = 0;
   }
