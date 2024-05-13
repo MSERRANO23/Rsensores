@@ -28,6 +28,7 @@ float za_vec[5000];  //, ya[15000];
 float x_giro, y_giro, z_giro, yg;
 float yg_vec[5000];  //, zg[15000];
 
+float tiempo_permanencia=0.0;
 // Rutina de interrupcion cada 2 ms
 void inter() {
   flag = true;
