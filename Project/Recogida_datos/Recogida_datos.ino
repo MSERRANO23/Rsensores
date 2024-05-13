@@ -4,10 +4,8 @@
 
 //Variables acelerometro
 float xA, yA, zA;
-
 //Variables giroscopio
 float xG, yG, zG;
-
 //Variables magnetometro
 float xM, yM, zM;
 
