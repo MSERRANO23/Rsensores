@@ -1,5 +1,5 @@
 #include <Arduino_LSM9DS1.h>
-#include <BBTimer.hpp>
+#include "BBTimer.hpp"
 
 // Variables
 int estado = 0;
@@ -17,7 +17,7 @@ int umbral = 1000;
 
 // Generacion del TIMER
 BBTimer my_t0(BB_TIMER0);
-int tiempo_interrupcion = 2;  //Frecuencia 500 Hz
+int tiempo_interrupcion = 2000;  //Frecuencia 500 Hz
 bool flag = false;
 
 //Variables acelerometro
@@ -54,7 +54,7 @@ void loop() {
   flag = false;
 
   // Maquina de estados
-  // Cálculo de la derivada
+  // Cálculo de la derivada 
   dAcel = (za - za[i]) / tiempo_interrupcion;  // derivada subiendo o bajando < 1000
   dGiro = (yg - yg[i]) / tiempo_interrupcion;  // derivada arriba o en reposo < 1000
 
@@ -78,7 +78,7 @@ void loop() {
   // Estado 3: Arriba (Cuando la derivada de la aceleracion es 0 y aceleracion supera un umbral por arriba (th4))
   if (dGiro < 1000 || estado == 3) {
     if (s != 0) {
-      tiempo_subida = s * t_interrupcion;
+      tiempo_subida = s * tiempo_interrupcion;
     }
     s = 0;
     arriba[a] = yg;
