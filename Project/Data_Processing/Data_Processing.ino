@@ -59,7 +59,7 @@ void loop() {
   if(dGiro < 1000 || estado == 1){
     s = 0;
     a = 0;
-    
+
     tiempo_permanencia = p * t_interrupcion;
     p = 0;
 
@@ -110,6 +110,8 @@ void loop() {
   za[i+1] = za;
   yg[i+1] = yg;
   i++;
+
+  // Cambiar lo siguiente por lo de bluetooth
 
   serial.println(tiempo_subida);
   serial.println(tiempo_permanencia);
