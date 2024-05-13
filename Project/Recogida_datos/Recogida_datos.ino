@@ -13,7 +13,7 @@ float xm, ym, zm;
 
 // Timer
 BBTimer timer(BB_TIMER0);
-int tint = 2;  //Frecuencia 500 Hz
+int tint = 2000;  //Frecuencia 500 Hz,Periodo en us
 bool flag = false;
 
 void setup() {
