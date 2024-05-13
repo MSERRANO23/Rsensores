@@ -17,7 +17,7 @@ int umbral = 1000;
 
 // Generacion del TIMER
 BBTimer my_t0(BB_TIMER0);
-int tiempo_interrupcion = 2000;  //Frecuencia 500 Hz
+int tiempo_interrupcion = 2000;  //Frecuencia 500 Hz, periodo en us
 bool flag = false;
 
 //Variables acelerometro
