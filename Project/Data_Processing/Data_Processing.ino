@@ -6,11 +6,14 @@ int estado = 0;
 int i = 0;
 int a = 0;
 int s = 0;
+int p = 0;
+
+// Derivadas
+int dAcel = 0;
+int dGiro = 0;
 
 // Umbrales
-float th1 = -0.1;
-float th2 = 0.1;
-float th3 = 0.25;
+int umbral = 1000;
 
 // Generacion del TIMER
 BBTimer my_t0(BB_TIMER0);
@@ -59,8 +62,9 @@ void loop() {
   if(dGiro < 1000 || estado == 1){
     s = 0;
     a = 0;
-
-    tiempo_permanencia = p * t_interrupcion;
+    if (p != 0){
+      tiempo_permanencia = p * t_interrupcion;
+    }
     p = 0;
 
   }
@@ -74,7 +78,9 @@ void loop() {
 
   // Estado 3: Arriba (Cuando la derivada de la aceleracion es 0 y aceleracion supera un umbral por arriba (th4))
   if(dGiro < 1000 || estado == 3){
-    tiempo_subida = s * t_interrupcion;
+    if (s != 0){
+      tiempo_subida = s * t_interrupcion;
+    }
     s = 0;
     arriba[a] = yg;
     a++;
@@ -94,6 +100,7 @@ void loop() {
     for(int j = 0; j<length(arriba)-1;i++){
       if (arriba[j] < min){
         min = 
+
       }
       if (arriba[j] > max){
         max = arriba[j];
