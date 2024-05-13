@@ -18,7 +18,7 @@ int umbral = 1000;
 // Generacion del TIMER
 BBTimer my_t0(BB_TIMER0);
 int tiempo_interrupcion = 2;  //Frecuencia 500 Hz
-bool falg = false;
+bool flag = false;
 
 //Variables acelerometro
 float x_acel, y_acel, z_acel, za;
@@ -95,16 +95,13 @@ void loop() {
     float max = 0;
     float min = 20;
     float acc = 0;
-    int t_max = 0;
 
     for(int j = 0; j<length(arriba)-1;i++){
       if (arriba[j] < min){
-        min = 
-
+        min = arriba[j];
       }
       if (arriba[j] > max){
         max = arriba[j];
-        t_max = j;
       }
       acc += arriba[j];
     }
