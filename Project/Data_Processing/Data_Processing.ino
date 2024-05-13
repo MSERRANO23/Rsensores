@@ -44,9 +44,9 @@ void loop() {
     IMU.readAcceleration(x_acel, y_acel, z_acel);
     IMU.readGyroscope(x_giro, y_giro, z_giro);
     // Guardo la aceleracion en z
-    za = -y_acel;
+    za = -y_acel; // acel en g
     // Guardo el giro en Y
-    yg = z_giro;
+    yg = z_giro; // giro en dps
   }
   flag = false;
 
@@ -57,6 +57,11 @@ void loop() {
 
   // Estado 1: Reposo (Cuando la derivada de la aceleracion es 0 y aceleracion no supera un umbral por arriba (th1) y por abajo (th2))
   if(dGiro < 1000 || estado == 1){
+    s = 0;
+    a = 0;
+    
+    tiempo_permanencia = p * t_interrupcion;
+    p = 0;
 
   }
 
@@ -64,23 +69,22 @@ void loop() {
   if(dAcel < 1000 || estado == 2){
     subida[s] = za;
     s++;
-
-    if(){
-      estado = 3;
-      subida[s]
-    }
+    p++;
   }
 
   // Estado 3: Arriba (Cuando la derivada de la aceleracion es 0 y aceleracion supera un umbral por arriba (th4))
   if(dGiro < 1000 || estado == 3){
+    tiempo_subida = s * t_interrupcion;
     s = 0;
     arriba[a] = yg;
     a++;
+    p++;
   }
 
   // Estado 4: Bajada (Cuando la derivada de la aceleracion es menor de 0 y aceleracion no supera un umbral por arriba y por abajo)
   if(dAcel < 1000 || estado == 4){
     a = 0;    
+    p++;
     // Calculo del giro maximo
     float max = 0;
     float min = 20;
@@ -106,4 +110,11 @@ void loop() {
   za[i+1] = za;
   yg[i+1] = yg;
   i++;
+
+  serial.println(tiempo_subida);
+  serial.println(tiempo_permanencia);
+  serial.println(giro_max);
+  serial.println(giro_min);
+  serial.println(giro_med);
+
 }
