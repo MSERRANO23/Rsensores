@@ -12,6 +12,7 @@ int p = 0;
 int dAcel = 0;
 int dGiro = 0;
 
+
 // Umbrales
 int umbral = 1000;
 
