@@ -4,9 +4,9 @@
 // Variables
 int estado = 0;
 int i = 0;
-int a = 0;
-int s = 0;
-int p = 0;
+int a = 0; //arriba
+int s = 0; //subiendo
+int p = 0; //permaneciendo
 
 // Derivadas
 int dAcel = 0;
@@ -40,6 +40,7 @@ void setup() {
   IMU.begin();
   my_t0.setupTimer(tiempo_interrupcion, inter);
   my_t0.timerStart();
+  //añadir incializacion BT
 }
 
 void loop() {
