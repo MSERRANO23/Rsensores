@@ -31,12 +31,30 @@ void interrup() {
 void loop() {
   if (flag == true) {
     // Read values
-    IMU.readAcceleration(xA, yA, zA);
-    Serial.println(" X " + String(xA) + " Y " + String(yA) + " Z " + String(zA));
-    IMU.readGyroscope(xG, yG, zG);
-    Serial.println(" X " + String(xG) + " Y " + String(yG) + " Z " + String(zG));
-    IMU.readMagneticField(xM, yM, zM);
-    Serial.println(" X " + String(xM) + " Y " + String(yM) + " Z " + String(zM));
+
+    IMU.readAcceleration(xa, ya, za);
+    Serial.print(xa);
+    Serial.print(" ");
+    Serial.print(ya);
+    Serial.print(" ");
+    Serial.print(za);
+    Serial.print(" ");
+
+    IMU.readGyroscope(xg, yg, zg);
+    Serial.print(xg);
+    Serial.print(" ");
+    Serial.print(yg);
+    Serial.print(" ");
+    Serial.print(zg);
+    Serial.print(" ");
+
+    IMU.readMagneticField(xm, ym, zm);
+    Serial.print(xm);
+    Serial.print(" ");
+    Serial.print(ym);
+    Serial.print(" ");
+    Serial.print(zm);
+    Serial.print(" ");
     Serial.println("----------------");
   }
   flag = false;
