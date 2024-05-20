@@ -34,9 +34,9 @@ float subida[500];
 float arriba[500];
 
 // Calculo del giro maximo
-float max_giro = 0;
-float min_giro = 20;
-float acc_giro = 0;
+float max_giro = 0.0;
+float min_giro = 20.0;
+float acc_giro = 0.0;
 
 // Variables a mandar
 float tiempo_subida = 0.0;
@@ -73,7 +73,7 @@ void loop() {
     // Guardo el giro en Y
     yg = z_giro;  // giro en dps
 
-    Serial.println("ok");
+    //Serial.println("ok");
   }
   flag = false;
 
@@ -82,8 +82,12 @@ void loop() {
   dAcel = (za - za_vec[i]) / tiempo_interrupcion;  // derivada subiendo o bajando < 1000
   dGiro = (yg - yg_vec[i]) / tiempo_interrupcion;  // derivada arriba o en reposo < 1000
 
+  Serial.println(dAcel);
+  Serial.println(dGiro);
+  Serial.println("");
+
   // Estado 1: Reposo (Cuando la derivada de la aceleracion es 0 y aceleracion no supera un umbral por arriba (th1) y por abajo (th2))
-  if (dGiro < umbral) {
+  if (dAcel < umbral) {
     max_giro = 0;
     min_giro = 20;
     acc_giro = 0;
@@ -98,7 +102,7 @@ void loop() {
   }
 
   // Estado 2: Subida (Cuando la derivada de la aceleracion es mayor de 0 y aceleracion supera un umbral (th1) y no supera umbral (th3))
-  else if (dAcel < umbral) {
+  else if (dAcel > umbral) {
     subida[s] = za;
     s++;
     p++;
@@ -106,7 +110,7 @@ void loop() {
   }
 
   // Estado 3: Arriba (Cuando la derivada de la aceleracion es 0 y aceleracion supera un umbral por arriba (th4))
-  else if (dGiro < umbral) {
+  else if (abs(dAcel) < umbral) {
     if (s != 0) {
       tiempo_subida = s * tiempo_interrupcion;
     }
@@ -161,4 +165,5 @@ void loop() {
   Serial.println(giro_max);
   Serial.println(giro_min);
   Serial.println(giro_med);
+  * /
 }
