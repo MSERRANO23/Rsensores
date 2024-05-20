@@ -79,8 +79,8 @@ void loop() {
 
   // Maquina de estados
   // Cálculo de la derivada
-  dAcel = (za - za_vec[i-1]) / tiempo_interrupcion * 1000000;  // derivada subiendo o bajando < 1000
-  dGiro = (yg - yg_vec[i-1]) / tiempo_interrupcion * 1000000;  // derivada arriba o en reposo < 1000
+  dAcel = (za - za_vec[i]) / tiempo_interrupcion * 1000000;  // derivada subiendo o bajando < 1000
+  dGiro = (yg - yg_vec[i]) / tiempo_interrupcion * 1000000;  // derivada arriba o en reposo < 1000
 
   Serial.println(dAcel);
   Serial.println(dGiro);
@@ -152,8 +152,8 @@ void loop() {
     i = 0;
 
   } else {
-    za_vec[i] = za;
-    yg_vec[i] = yg;
+    za_vec[i+1] = za;
+    yg_vec[i+1] = yg;
     i++;
   }
 /*
