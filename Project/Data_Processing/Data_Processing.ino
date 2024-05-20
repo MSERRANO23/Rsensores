@@ -8,6 +8,7 @@ int a = 0; //arriba
 int s = 0; //subiendo
 int p = 0; //permaneciendo
 
+
 // Derivadas
 int dAcel = 0;
 int dGiro = 0;
