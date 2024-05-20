@@ -59,7 +59,7 @@ void loop() {
   dGiro = (yg - yg[i]) / tiempo_interrupcion; // derivada arriba o en reposo < 1000
 
   // Estado 1: Reposo (Cuando la derivada de la aceleracion es 0 y aceleracion no supera un umbral por arriba (th1) y por abajo (th2))
-  if(dGiro < 1000 || estado == 1){
+  if(dGiro < 1000){
     s = 0;
     a = 0;
     if (p != 0){
@@ -70,14 +70,14 @@ void loop() {
   }
 
   // Estado 2: Subida (Cuando la derivada de la aceleracion es mayor de 0 y aceleracion supera un umbral (th1) y no supera umbral (th3))
-  if(dAcel < 1000 || estado == 2){
+  if(dAcel < 1000){
     subida[s] = za;
     s++;
     p++;
   }
 
   // Estado 3: Arriba (Cuando la derivada de la aceleracion es 0 y aceleracion supera un umbral por arriba (th4))
-  if(dGiro < 1000 || estado == 3){
+  if(dGiro < 1000){
     if (s != 0){
       tiempo_subida = s * t_interrupcion;
     }
@@ -88,11 +88,11 @@ void loop() {
   }
 
   // Estado 4: Bajada (Cuando la derivada de la aceleracion es menor de 0 y aceleracion no supera un umbral por arriba y por abajo)
-  if(dAcel < 1000 || estado == 4){
+  if(dAcel < 1000){
     a = 0;    
     p++;
     // Calculo del giro maximo
-    float max = 0;
+    float max = -0.5;
     float min = 20;
     float acc = 0;
 
