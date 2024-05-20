@@ -98,14 +98,14 @@ void loop() {
     float min = 20;
     float acc = 0;
 
-    for (int j = 0; j < length(arriba) - 1; i++) {
+    for (int j = 0; j < length(arriba); i++) {
       if (arriba[j] < min) {
         min = arriba[j];
       }
       if (arriba[j] > max) {
         max = arriba[j];
       }
-      acc += arriba[j];
+      acc += arriba[j]; //acumulado para el giro medio.
     }
 
     giro_max = max * (t_interrupcion);
