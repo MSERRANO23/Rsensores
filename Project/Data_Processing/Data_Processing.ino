@@ -29,6 +29,10 @@ float za_vec[5000];  //, ya[15000]; Cambio de ejes
 float x_giro, y_giro, z_giro, yg;
 float yg_vec[5000];  //, zg[15000]; Cambio de ejes
 
+//Vectores de guradado de datos
+float subida[500];
+float arriba[500];
+
 //Inicializar vectores
 za_vec[0] = 0;
 yg_vec[0] = 0;
