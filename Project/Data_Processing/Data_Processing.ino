@@ -119,6 +119,7 @@ void loop() {
   if(i == 5000){
     za_vec[0] = za;
     yg_vec[0] = yg;
+    i = 0;
 
   } else{ 
     za_vec[i + 1] = za;
