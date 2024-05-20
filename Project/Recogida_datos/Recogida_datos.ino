@@ -31,9 +31,6 @@ void interrup() {
 void loop() {
   if (flag == true) {
     // Read values
-
-
-
     IMU.readAcceleration(xa, ya, za);
     Serial.print(xa);
     Serial.print(" ");
