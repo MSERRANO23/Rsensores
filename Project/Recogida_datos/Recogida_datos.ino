@@ -3,22 +3,20 @@
 #include <Arduino.h>
 
 //Variables acelerometro
-float xa, ya, za;
-
+float xA, yA, zA;
 //Variables giroscopio
-float xg, yg, zg;
-
+float xG, yG, zG;
 //Variables magnetometro
-float xm, ym, zm;
+float xM, yM, zM;
 
 // Timer
 BBTimer timer(BB_TIMER0);
-int tint = 2;  //Frecuencia 500 Hz
+int tint = 2000;  //Frecuencia 500 Hz,Periodo en us
 bool flag = false;
 
 void setup() {
   // Inicializar UART
-  Serial.begin(9600);
+  Serial.begin(115200);
   // Inicializar sensores
   IMU.begin();
   //Inicializar timer
@@ -31,32 +29,16 @@ void interrup() {
 }
 
 void loop() {
-  if(flag == true){
-    // Leer sensores
-    IMU.readAcceleration(xa, ya, za);
-    Serial.print(xa);
-    Serial.print(" ");
-    Serial.print(ya);
-    Serial.print(" ");
-    Serial.print(za);
-    Serial.print(" ");
-
-    IMU.readGyroscope(xg, yg, zg);
-    Serial.print(xg);
-    Serial.print(" ");
-    Serial.print(yg);
-    Serial.print(" ");
-    Serial.print(zg);
-    Serial.print(" ");
-
-    IMU.readMagneticField(xm, ym, zm);
-    Serial.print(xm);
-    Serial.print(" ");
-    Serial.print(ym);
-    Serial.print(" ");
-    Serial.print(zm);
-    Serial.print(" ");
-    
+  if (flag == true) {
+    // Read values
+    IMU.readAcceleration(xA, yA, zA);
+    Serial.println(" X " + String(xA) + " Y " + String(yA) + " Z " + String(zA));
+    IMU.readGyroscope(xG, yG, zG);
+    Serial.println(" X " + String(xG) + " Y " + String(yG) + " Z " + String(zG));
+    IMU.readMagneticField(xM, yM, zM);
+    Serial.println(" X " + String(xM) + " Y " + String(yM) + " Z " + String(zM));
+    Serial.println("----------------");
   }
   flag = false;
+  delay(500);
 }
