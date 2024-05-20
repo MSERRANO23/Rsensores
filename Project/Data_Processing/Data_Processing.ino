@@ -83,6 +83,10 @@ void loop() {
 
   // Estado 1: Reposo (Cuando la derivada de la aceleracion es 0 y aceleracion no supera un umbral por arriba (th1) y por abajo (th2))
   if (dGiro < umbral) {
+    max = 0;
+    min = 20;
+    acc = 0;
+
     s = 0;
     a = 0;
     if (p != 0) {
@@ -114,20 +118,23 @@ void loop() {
     a = 0;
     p++;
 
-    length = sizeof(subida) / sizeof(subida[0]);
-    for (int j = 0; j < length; i++) {
-      if (arriba[j] < min) {
-        min = arriba[j];
-      }
-      if (arriba[j] > max) {
-        max = arriba[j];
-      }
-      acc += arriba[j];  //acumulado para el giro medio.
-    }
+    if (max == 0) {
 
-    giro_max = max * (tiempo_interrupcion);
-    giro_min = min * (tiempo_interrupcion);
-    giro_med = acc / length * tiempo_interrupcion;
+      length = sizeof(arriba) / sizeof(arriba[0]);
+      for (int j = 0; j < length; i++) {
+        if (arriba[j] < min) {
+          min = arriba[j];
+        }
+        if (arriba[j] > max) {
+          max = arriba[j];
+        }
+        acc += arriba[j];  //acumulado para el giro medio.
+      }
+
+      giro_max = max * (tiempo_interrupcion);
+      giro_min = min * (tiempo_interrupcion);
+      giro_med = acc / length * tiempo_interrupcion;
+    }
   }
 
   if (i == 5000) {
