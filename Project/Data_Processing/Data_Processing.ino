@@ -14,7 +14,7 @@ int dAcel = 0;
 int dGiro = 0;
 
 // Umbrales
-int umbral = 1000;
+int umbral = 5;
 
 // Generacion del TIMER
 BBTimer my_t0(BB_TIMER0);
@@ -79,15 +79,15 @@ void loop() {
 
   // Maquina de estados
   // Cálculo de la derivada
-  dAcel = (za - za_vec[i]) / tiempo_interrupcion;  // derivada subiendo o bajando < 1000
-  dGiro = (yg - yg_vec[i]) / tiempo_interrupcion;  // derivada arriba o en reposo < 1000
+  dAcel = (za - za_vec[i-1]) / tiempo_interrupcion * 1000000;  // derivada subiendo o bajando < 1000
+  dGiro = (yg - yg_vec[i-1]) / tiempo_interrupcion * 1000000;  // derivada arriba o en reposo < 1000
 
   Serial.println(dAcel);
   Serial.println(dGiro);
   Serial.println("");
 
   // Estado 1: Reposo (Cuando la derivada de la aceleracion es 0 y aceleracion no supera un umbral por arriba (th1) y por abajo (th2))
-  if (dAcel < umbral) {
+  if (abs(dAcel) < umbral) {
     max_giro = 0;
     min_giro = 20;
     acc_giro = 0;
@@ -102,7 +102,7 @@ void loop() {
   }
 
   // Estado 2: Subida (Cuando la derivada de la aceleracion es mayor de 0 y aceleracion supera un umbral (th1) y no supera umbral (th3))
-  else if (dAcel > umbral) {
+  else if (abs(dAcel) > umbral) {
     subida[s] = za;
     s++;
     p++;
@@ -122,7 +122,7 @@ void loop() {
   }
 
   // Estado 4: Bajada (Cuando la derivada de la aceleracion es menor de 0 y aceleracion no supera un umbral por arriba y por abajo)
-  else if (dAcel < umbral) {
+  else if (abs(dAcel) < umbral) {
     a = 0;
     p++;
 
@@ -152,11 +152,11 @@ void loop() {
     i = 0;
 
   } else {
-    za_vec[i + 1] = za;
-    yg_vec[i + 1] = yg;
+    za_vec[i] = za;
+    yg_vec[i] = yg;
     i++;
   }
-
+/*
 
   // Cambiar lo siguiente por lo de bluetooth
 
@@ -165,5 +165,5 @@ void loop() {
   Serial.println(giro_max);
   Serial.println(giro_min);
   Serial.println(giro_med);
-  * /
+  */
 }
