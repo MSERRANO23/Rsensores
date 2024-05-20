@@ -64,7 +64,6 @@ void setup() {
 }
 
 void loop() {
-
   // Interrupción
   if (flag == true) {
     IMU.readAcceleration(x_acel, y_acel, z_acel);
@@ -73,6 +72,8 @@ void loop() {
     za = -y_acel;  // acel en g
     // Guardo el giro en Y
     yg = z_giro;  // giro en dps
+
+    Serial.println("ok");
   }
   flag = false;
 
@@ -93,17 +94,19 @@ void loop() {
       tiempo_permanencia = p * tiempo_interrupcion;
     }
     p = 0;
+    Serial.println("E1");
   }
 
   // Estado 2: Subida (Cuando la derivada de la aceleracion es mayor de 0 y aceleracion supera un umbral (th1) y no supera umbral (th3))
-  if (dAcel < umbral) {
+  else if (dAcel < umbral) {
     subida[s] = za;
     s++;
     p++;
+    Serial.println("E2");
   }
 
   // Estado 3: Arriba (Cuando la derivada de la aceleracion es 0 y aceleracion supera un umbral por arriba (th4))
-  if (dGiro < umbral) {
+  else if (dGiro < umbral) {
     if (s != 0) {
       tiempo_subida = s * tiempo_interrupcion;
     }
@@ -111,10 +114,11 @@ void loop() {
     arriba[a] = yg;
     a++;
     p++;
+    Serial.println("E3");
   }
 
   // Estado 4: Bajada (Cuando la derivada de la aceleracion es menor de 0 y aceleracion no supera un umbral por arriba y por abajo)
-  if (dAcel < umbral) {
+  else if (dAcel < umbral) {
     a = 0;
     p++;
 
@@ -134,6 +138,7 @@ void loop() {
       giro_max = max_giro * (tiempo_interrupcion);
       giro_min = min_giro * (tiempo_interrupcion);
       giro_med = acc_giro / length * tiempo_interrupcion;
+      Serial.println("E4");
     }
   }
 
