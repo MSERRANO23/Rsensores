@@ -50,7 +50,7 @@ void loop() {
     Serial.print(" ");
 
     IMU.readMagneticField(xm, ym, zm);
-    Serial.print(xm);
+    Serial.print(xm)
     Serial.print(" ");
     Serial.print(ym);
     Serial.print(" ");
