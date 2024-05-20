@@ -4,10 +4,10 @@
 // Variables
 int estado = 0;
 int i = 0;
-int a = 0; //arriba
-int s = 0; //subiendo
-int p = 0; //permaneciendo
-float tiempo_permanencia=0.0;
+int a = 0;  //arriba
+int s = 0;  //subiendo
+int p = 0;  //permaneciendo
+int length = 0;
 
 // Derivadas
 int dAcel = 0;
@@ -29,13 +29,21 @@ float za_vec[5000];  //, ya[15000]; Cambio de ejes
 float x_giro, y_giro, z_giro, yg;
 float yg_vec[5000];  //, zg[15000]; Cambio de ejes
 
-//Vectores de guradado de datos
+//Vectores y variables de guradado de datos
 float subida[500];
 float arriba[500];
 
-//Inicializar vectores
-za_vec[0] = 0;
-yg_vec[0] = 0;
+// Calculo del giro maximo
+float max = 0;
+float min = 20;
+float acc = 0;
+
+// Variables a mandar
+float tiempo_subida = 0.0;
+float tiempo_permanencia = 0.0;
+float giro_max = 0.0;
+float giro_min = 0.0;
+float giro_med = 0.0;
 
 // Rutina de interrupcion cada 2 ms
 void inter() {
@@ -47,6 +55,11 @@ void setup() {
   IMU.begin();
   my_t0.setupTimer(tiempo_interrupcion, inter);
   my_t0.timerStart();
+
+  //Inicializar vectores
+  za_vec[0] = 0.0;
+  yg_vec[0] = 0.0;
+
   //añadir incializacion BT
 }
 
@@ -64,7 +77,7 @@ void loop() {
   flag = false;
 
   // Maquina de estados
-  // Cálculo de la derivada 
+  // Cálculo de la derivada
   dAcel = (za - za_vec[i]) / tiempo_interrupcion;  // derivada subiendo o bajando < 1000
   dGiro = (yg - yg_vec[i]) / tiempo_interrupcion;  // derivada arriba o en reposo < 1000
 
@@ -100,32 +113,29 @@ void loop() {
   if (dAcel < umbral) {
     a = 0;
     p++;
-    // Calculo del giro maximo
-    float max = 0;
-    float min = 20;
-    float acc = 0;
 
-    for (int j = 0; j < length(arriba); i++) {
+    length = sizeof(subida) / sizeof(subida[0]);
+    for (int j = 0; j < length; i++) {
       if (arriba[j] < min) {
         min = arriba[j];
       }
       if (arriba[j] > max) {
         max = arriba[j];
       }
-      acc += arriba[j]; //acumulado para el giro medio.
+      acc += arriba[j];  //acumulado para el giro medio.
     }
 
-    giro_max = max * (t_interrupcion);
-    giro_min = min * (t_interrupcion);
-    giro_med = acc / length(arriba) * t_interrupcion;
+    giro_max = max * (tiempo_interrupcion);
+    giro_min = min * (tiempo_interrupcion);
+    giro_med = acc / length * tiempo_interrupcion;
   }
 
-  if(i == 5000){
+  if (i == 5000) {
     za_vec[0] = za;
     yg_vec[0] = yg;
     i = 0;
 
-  } else{ 
+  } else {
     za_vec[i + 1] = za;
     yg_vec[i + 1] = yg;
     i++;
@@ -134,9 +144,9 @@ void loop() {
 
   // Cambiar lo siguiente por lo de bluetooth
 
-  serial.println(tiempo_subida);
-  serial.println(tiempo_permanencia);
-  serial.println(giro_max);
-  serial.println(giro_min);
-  serial.println(giro_med);
+  Serial.println(tiempo_subida);
+  Serial.println(tiempo_permanencia);
+  Serial.println(giro_max);
+  Serial.println(giro_min);
+  Serial.println(giro_med);
 }
