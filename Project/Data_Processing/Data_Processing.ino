@@ -34,9 +34,9 @@ float subida[500];
 float arriba[500];
 
 // Calculo del giro maximo
-float max = 0;
-float min = 20;
-float acc = 0;
+float max_giro = 0;
+float min_giro = 20;
+float acc_giro = 0;
 
 // Variables a mandar
 float tiempo_subida = 0.0;
@@ -83,9 +83,9 @@ void loop() {
 
   // Estado 1: Reposo (Cuando la derivada de la aceleracion es 0 y aceleracion no supera un umbral por arriba (th1) y por abajo (th2))
   if (dGiro < umbral) {
-    max = 0;
-    min = 20;
-    acc = 0;
+    max_giro = 0;
+    min_giro = 20;
+    acc_giro = 0;
 
     s = 0;
     a = 0;
@@ -118,22 +118,22 @@ void loop() {
     a = 0;
     p++;
 
-    if (max == 0) {
+    if (max_giro == 0) {
 
       length = sizeof(arriba) / sizeof(arriba[0]);
       for (int j = 0; j < length; i++) {
-        if (arriba[j] < min) {
-          min = arriba[j];
+        if (arriba[j] < min_giro) {
+          min_giro = arriba[j];
         }
-        if (arriba[j] > max) {
-          max = arriba[j];
+        if (arriba[j] > max_giro) {
+          max_giro = arriba[j];
         }
-        acc += arriba[j];  //acumulado para el giro medio.
+        acc_giro += arriba[j];  //acumulado para el giro medio.
       }
 
-      giro_max = max * (tiempo_interrupcion);
-      giro_min = min * (tiempo_interrupcion);
-      giro_med = acc / length * tiempo_interrupcion;
+      giro_max = max_giro * (tiempo_interrupcion);
+      giro_min = min_giro * (tiempo_interrupcion);
+      giro_med = acc_giro / length * tiempo_interrupcion;
     }
   }
 
