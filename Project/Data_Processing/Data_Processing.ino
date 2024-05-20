@@ -32,7 +32,7 @@ float yg_vec[5000];  //, zg[15000]; Cambio de ejes
 //Vectores y variables de guradado de datos
 float subida[500];
 float arriba[500];
-
+float reposo[500];
 // Calculo del giro maximo
 float max_giro = 0;
 float min_giro = 20;
