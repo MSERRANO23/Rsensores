@@ -49,7 +49,7 @@ void setup() {
     Serial.println("Connecting to WiFi..");
   }
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  printLocalTime();
+  printLocalTime(); //imprimir la hora local
   // Print ESP32 Local IP Address
   Serial.println(WiFi.localIP());
   // Route for root / web page
@@ -60,8 +60,8 @@ void setup() {
   server.on("/style.css", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/style.css", "text/css");
   });
-
-  server.on("/RESTART", HTTP_GET, [](AsyncWebServerRequest *request) {
+  //restart de day
+  server.on("/restart", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(SPIFFS, "/index.html", String(), false, processor);
   });
 
