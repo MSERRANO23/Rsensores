@@ -1,12 +1,12 @@
 // Librerias
-#include "BBtimer.hpp"
+#include <arduino.h>
+#include "BBTimer.hpp"
+#include "mbed.h"
 #include <Arduino_LSM9DS1.h>
-#include <Math.h>
 #include <ArduinoBLE.h>
-
 // Interrupcion
 BBTimer my_t0(BB_TIMER0);
-int tiempo_interrupcion = 2000;  //Frecuencia 500 Hz, periodo en us
+int tiempo_interrupcion = 20000;  //Frecuencia 500 Hz, periodo en us
 bool flag = false;
 
 // Variables
@@ -37,11 +37,11 @@ float t_puntillas = 0.0;
 
 //Elementos BT
 BLEService Service("1001");
-BLECharacteristic Angle_MAX("2001", BLERead | BLENotify, 20);
-BLECharacteristic Angle_MIN("2002", BLERead | BLENotify, 20);
-BLECharacteristic Angle_MEAN("2003", BLERead | BLENotify, 20);
-BLECharacteristic puntillas_Completo("2004", BLERead | BLENotify, 20);
-BLECharacteristic puntillas_arriba("2005", BLERead | BLENotify, 20);
+BLEStringCharacteristic Angle_MAX("", BLERead | BLENotify, 12);
+BLEStringCharacteristic Angle_MIN("2002", BLERead | BLENotify, 12);
+BLEStringCharacteristic Angle_MEAN("2003", BLERead | BLENotify, 12);
+BLEStringCharacteristic puntillas_Completo("2004", BLERead | BLENotify, 12);
+BLEStringCharacteristic puntillas_arriba("2005", BLERead | BLENotify, 20);
 BLEByteCharacteristic caracteristicas("1001", BLERead | BLEWrite);
 
 
@@ -66,133 +66,154 @@ void setup() {
   estado = "Reposo";
   //Bluetooth inicio
   if (!BLE.begin()) {
-    while (1)
-      ;
+    while (1);
   }
   BLE.setLocalName("HM");
-  BLE.setAdvertisedService( Service );
-  Service.addCharacteristic( Angle_MAX );
-  Service.addCharacteristic( Angle_MEAN );
-  Service.addCharacteristic( Angle_MIN );
-  Service.addCharacteristic( puntillas_Completo );
-  Service.addCharacteristic( puntillas_arriba );
-  Service.addCharacteristic( caracteristicas );
+  BLE.setAdvertisedService(Service);
+
+  Service.addCharacteristic(Angle_MAX);
+  Service.addCharacteristic(Angle_MEAN);
+  Service.addCharacteristic(Angle_MIN);
+  Service.addCharacteristic(puntillas_Completo);
+  Service.addCharacteristic(puntillas_arriba);
+  Service.addCharacteristic(caracteristicas);
+
+  BLE.addService(Service);
+  BLE.advertise();
 }  // end setUp
 
 void loop() {
 
-  // Funcion de la Interrupción
-  if (flag == true) {
+  BLEDevice central = BLE.central();
+  if (central.connected()) {
 
-    // Lectura de datos
-    IMU.readAcceleration(x_acel, y_acel, z_acel);
-    IMU.readGyroscope(x_giro, y_giro, z_giro);
+    if (caracteristicas.written()) {
+      bool start = (caracteristicas.value() > 0) ? true : false;
+      if (start) {
+        Serial.println("ON");
+      } else {
+        Serial.println("OFF");
+      }
+    }
+    // Funcion de la Interrupción
+    if (flag == true) {
 
-    // Almacenamiento y procesado de la muestra tomada
-    // Variable de interes: aceleracion en z
-    za = -y_acel;  // acel en g
+      // Lectura de datos
+      IMU.readAcceleration(x_acel, y_acel, z_acel);
+      IMU.readGyroscope(x_giro, y_giro, z_giro);
+
+      // Almacenamiento y procesado de la muestra tomada
+      // Variable de interes: aceleracion en z
+      za = -y_acel;  // acel en g
+      //Serial.println(za);
+      // Variable de interes: giro en Y
+      yg = z_giro;  // giro en dps
+      //Serial.println(yg);
+
+    }  // end funcInter
+
+    flag = false;
+
+    // Maquina de estados
     //Serial.println(za);
-    // Variable de interes: giro en Y
-    yg = z_giro;  // giro en dps
     //Serial.println(yg);
+    if (yg > 0.50 && yg < 1.5 && za < 1.1 && za > 0.90) {
+      estado = "Reposo";
+    }
 
-  }  // end funcInter
+    else if (yg > 4.5) {
+      estado = "Bajando";
+    }
 
-  flag = false;
+    else if (yg < 2.0 && za < 0.94) {
+      estado = "Arriba";
+    }
 
-  // Maquina de estados
-  //Serial.println(za);
-  //Serial.println(yg);
-  if (yg > 0.50 && yg < 1.5 && za < 1.1 && za > 0.90) {
-    estado = "Reposo";
+    else if (yg < (-4.5)) {
+      estado = "Subiendo";
+    }
+
+
+
+    if (estado == "Reposo") {
+
+      // Calculo del tiempo total que ha estado de puntillas
+      if (t_puntillas == 0.0 and t_ini_subida != 0) {
+        t_puntillas = millis() - t_ini_subida;
+      }
+
+      // Mandar por BLE (t_puntillas, t_arriba, giro_max, giro_min, giro_med)
+
+      Serial.println(t_puntillas * 1000);
+      Serial.println(t_arriba * 1000);
+      Serial.println(giro_max);
+      Serial.println(giro_min);
+      Serial.println(giro_med);
+
+      //Send BLE data
+      Angle_MAX.writeValue(String(giro_max));
+      Angle_MIN.writeValue(String(giro_min));
+      Angle_MEAN.writeValue(String(giro_med));
+      puntillas_Completo.writeValue(String(t_puntillas));
+      puntillas_arriba.writeValue(String(t_arriba));
+
+
+      // Reset de las variables
+      max_giro = 10.0;
+      min_giro = 0.0;
+      giro_med = 0.0;
+      giro_max = 0.0;
+      giro_min = 0.0;
+
+      a = 0;
+
+      t_ini_subida = 0.0;
+      t_arriba = 0.0;
+      t_puntillas = 0.0;
+      Serial.println(estado);
+    }  // end Reposo
+
+    else if (estado == "Subiendo") {
+
+      // Calculo del momento que empieza a ponerse de puntillas
+      if (t_ini_subida == 0.0) {
+        t_ini_subida = millis();
+      }
+      Serial.println(estado);
+    }  //end Subiendo
+
+    else if (estado == "Arriba") {
+
+      // Calculo de los angulos I
+      if (yg > 0) {
+        giro_med += yg;
+      } else {
+        giro_med += (-1.0) * yg;
+      }
+      a++;
+
+      if (yg < min_giro) {
+        min_giro = yg;
+      }
+      if (yg > max_giro) {
+        max_giro = yg;
+      }
+      Serial.println(estado);
+    }  // end Arriba
+
+    else if (estado == "Bajando") {
+
+      // Calculo del tiempo que ha estado arriba
+      if (t_arriba == 0.0) {
+        t_arriba = millis() - t_ini_subida;
+      }
+
+      // Calculo de los angulos II
+      giro_min = min_giro * tiempo_interrupcion / 100000;
+      giro_max = max_giro * tiempo_interrupcion / 100000;
+      giro_med = giro_med * tiempo_interrupcion / (float)a / 100000;
+      Serial.println(estado);
+    }  // end Bajando
   }
-
-  else if (yg > 4.5) {
-    estado = "Bajando";
-  }
-
-  else if (yg < 2.0 && za < 0.94) {
-    estado = "Arriba";
-  }
-
-  else if (yg < (-4.5)) {
-    estado = "Subiendo";
-  }
-
-
-
-  if (estado == "Reposo") {
-
-    // Calculo del tiempo total que ha estado de puntillas
-    if (t_puntillas == 0.0 and t_ini_subida != 0) {
-      t_puntillas = millis() - t_ini_subida;
-    }
-
-    // Mandar por BLE (t_puntillas, t_arriba, giro_max, giro_min, giro_med)
-
-    //Serial.println(t_puntillas*1000);
-    //Serial.println(t_arriba*1000);
-    Serial.println(giro_max);
-    Serial.println(giro_min);
-    Serial.println(giro_med);
-
-    // Reset de las variables
-    max_giro = 10.0;
-    min_giro = 0.0;
-    giro_med = 0.0;
-    giro_max = 0.0;
-    giro_min = 0.0;
-
-    a = 0;
-
-    t_ini_subida = 0.0;
-    t_arriba = 0.0;
-    t_puntillas = 0.0;
-    Serial.println(estado);
-  }  // end Reposo
-
-  else if (estado == "Subiendo") {
-
-    // Calculo del momento que empieza a ponerse de puntillas
-    if (t_ini_subida == 0.0) {
-      t_ini_subida = millis();
-    }
-    Serial.println(estado);
-  }  //end Subiendo
-
-  else if (estado == "Arriba") {
-
-    // Calculo de los angulos I
-    if (yg > 0) {
-      giro_med += yg;
-    } else {
-      giro_med += (-1.0) * yg;
-    }
-    a++;
-
-    if (yg < min_giro) {
-      min_giro = yg;
-    }
-    if (yg > max_giro) {
-      max_giro = yg;
-    }
-    Serial.println(estado);
-  }  // end Arriba
-
-  else if (estado == "Bajando") {
-
-    // Calculo del tiempo que ha estado arriba
-    if (t_arriba == 0.0) {
-      t_arriba = millis() - t_ini_subida;
-    }
-
-    // Calculo de los angulos II
-    giro_min = min_giro * tiempo_interrupcion / 1000000;
-    giro_max = max_giro * tiempo_interrupcion / 1000000;
-    giro_med = giro_med * tiempo_interrupcion / (float)a / 1000000;
-    Serial.println(estado);
-  }  // end Bajando
-
   Serial.println("---------------");
-  delay(400);
 }  // end loop
