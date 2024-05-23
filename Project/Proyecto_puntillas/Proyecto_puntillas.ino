@@ -66,7 +66,8 @@ void setup() {
   estado = "Reposo";
   //Bluetooth inicio
   if (!BLE.begin()) {
-    while (1);
+    while (1)
+      ;
   }
   BLE.setLocalName("HM");
   BLE.setAdvertisedService(Service);
@@ -88,8 +89,13 @@ void loop() {
   if (central.connected()) {
 
     if (caracteristicas.written()) {
-      bool start = (caracteristicas.value() > 0) ? true : false;
-      if (start) {
+      bool activacion;
+      if (caracteristicas.value() > 0) {
+        activacion = true;
+      } else {
+        activacion = false;
+      }
+      if (activacion) {
         Serial.println("ON");
       } else {
         Serial.println("OFF");
