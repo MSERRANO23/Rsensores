@@ -10,8 +10,8 @@ int p = 0;  //permaneciendo
 int length = 0;
 
 // Derivadas
-int dAcel = 0;
-int dGiro = 0;
+float dAcel = 0;
+float dGiro = 0;
 
 // Umbrales
 int umbral = 5;
@@ -64,6 +64,7 @@ void setup() {
 }
 
 void loop() {
+  Serial.println("----------------------");
   // Interrupción
   if (flag == true) {
     IMU.readAcceleration(x_acel, y_acel, z_acel);
@@ -74,11 +75,30 @@ void loop() {
     yg = z_giro;  // giro en dps
 
     //Serial.println("ok");
+
   }
   flag = false;
-
+  Serial.println(za);
+  Serial.println(yg);
+  Serial.println("++++++++++");
   // Maquina de estados
   // Cálculo de la derivada
+
+  dAcel = (za - za_vec[i-1]) / tiempo_interrupcion;  // derivada subiendo o bajando < 1000
+  dGiro = (yg - yg_vec[i-1]) / tiempo_interrupcion;  // derivada arriba o en reposo < 1000
+  Serial.println(dAcel*1000);
+  Serial.println(dGiro*1000);
+  delay(500);
+  yg_vec[i] = yg;
+  za_vec[i] = za;
+  Serial.println(za_vec[i-1]);
+  Serial.println(yg_vec[i-1]);
+  Serial.println(i);
+  i++;
+  // derivada de giro < 6 para considerar que no varia
+  //derivada de aceleración < 0.3 para considerar que no varia
+  
+=======
   dAcel = (za - za_vec[i]) / tiempo_interrupcion * 1000000;  // derivada subiendo o bajando < 1000
   dGiro = (yg - yg_vec[i]) / tiempo_interrupcion * 1000000;  // derivada arriba o en reposo < 1000
 
@@ -166,4 +186,5 @@ void loop() {
   Serial.println(giro_min);
   Serial.println(giro_med);
   */
+  
 }
