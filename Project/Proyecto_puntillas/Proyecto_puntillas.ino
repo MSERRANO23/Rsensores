@@ -2,6 +2,7 @@
 #include "BBtimer.hpp"
 #include <Arduino_LSM9DS1.h>
 #include <Math.h>
+#include <ArduinoBLE.h>
 
 // Interrupcion
 BBTimer my_t0(BB_TIMER0);
@@ -34,6 +35,16 @@ float t_ini_subida = 0.0;
 float t_arriba = 0.0;
 float t_puntillas = 0.0;
 
+//Elementos BT
+BLEService Service("1001");
+BLECharacteristic Angle_MAX("2001", BLERead | BLENotify, 20);
+BLECharacteristic Angle_MIN("2002", BLERead | BLENotify, 20);
+BLECharacteristic Angle_MEAN("2003", BLERead | BLENotify, 20);
+BLECharacteristic puntillas_Completo("2004", BLERead | BLENotify, 20);
+BLECharacteristic puntillas_arriba("2005", BLERead | BLENotify, 20);
+BLEByteCharacteristic caracteristicas("1001", BLERead | BLEWrite);
+
+
 // Rutina de interrupcion
 void inter() {
   flag = true;
@@ -53,6 +64,19 @@ void setup() {
 
   // Inicializar estado
   estado = "Reposo";
+  //Bluetooth inicio
+  if (!BLE.begin()) {
+    while (1)
+      ;
+  }
+  BLE.setLocalName("HM");
+  BLE.setAdvertisedService( Service );
+  Service.addCharacteristic( Angle_MAX );
+  Service.addCharacteristic( Angle_MEAN );
+  Service.addCharacteristic( Angle_MIN );
+  Service.addCharacteristic( puntillas_Completo );
+  Service.addCharacteristic( puntillas_arriba );
+  Service.addCharacteristic( caracteristicas );
 }  // end setUp
 
 void loop() {
@@ -142,7 +166,7 @@ void loop() {
     if (yg > 0) {
       giro_med += yg;
     } else {
-      giro_med += (-1.0)*yg;
+      giro_med += (-1.0) * yg;
     }
     a++;
 
@@ -163,9 +187,9 @@ void loop() {
     }
 
     // Calculo de los angulos II
-    giro_min = min_giro  * tiempo_interrupcion/1000000;
-    giro_max = max_giro  * tiempo_interrupcion/1000000;
-    giro_med = giro_med  * tiempo_interrupcion / (float)a / 1000000;
+    giro_min = min_giro * tiempo_interrupcion / 1000000;
+    giro_max = max_giro * tiempo_interrupcion / 1000000;
+    giro_med = giro_med * tiempo_interrupcion / (float)a / 1000000;
     Serial.println(estado);
   }  // end Bajando
 
