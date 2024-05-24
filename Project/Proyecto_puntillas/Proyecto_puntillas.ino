@@ -37,7 +37,7 @@ float t_puntillas = 0.0;
 
 //Elementos BT
 BLEService Service("1001");
-BLEStringCharacteristic Angle_MAX("", BLERead | BLENotify, 12);
+BLEStringCharacteristic Angle_MAX("2001", BLERead | BLENotify, 12);
 BLEStringCharacteristic Angle_MIN("2002", BLERead | BLENotify, 12);
 BLEStringCharacteristic Angle_MEAN("2003", BLERead | BLENotify, 12);
 BLEStringCharacteristic puntillas_Completo("2004", BLERead | BLENotify, 12);
@@ -160,8 +160,8 @@ void loop() {
       Angle_MAX.writeValue(String(giro_max));
       Angle_MIN.writeValue(String(giro_min));
       Angle_MEAN.writeValue(String(giro_med));
-      puntillas_Completo.writeValue(String(t_puntillas));
-      puntillas_arriba.writeValue(String(t_arriba));
+      puntillas_Completo.writeValue(String(t_puntillas*1000));
+      puntillas_arriba.writeValue(String(t_arriba*1000));
 
 
       // Reset de las variables
@@ -215,9 +215,9 @@ void loop() {
       }
 
       // Calculo de los angulos II
-      giro_min = min_giro * tiempo_interrupcion / 100000;
-      giro_max = max_giro * tiempo_interrupcion / 100000;
-      giro_med = giro_med * tiempo_interrupcion / (float)a / 100000;
+      giro_min = min_giro * tiempo_interrupcion / 10000;
+      giro_max = max_giro * tiempo_interrupcion / 10000;
+      giro_med = giro_med * tiempo_interrupcion / (float)a / 10000;
       Serial.println(estado);
     }  // end Bajando
   }
