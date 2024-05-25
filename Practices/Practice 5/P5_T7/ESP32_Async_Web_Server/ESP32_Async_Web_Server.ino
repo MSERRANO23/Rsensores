@@ -49,7 +49,7 @@ void setup() {
     Serial.println("Connecting to WiFi..");
   }
   configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);
-  printLocalTime(); //imprimir la hora local
+  //printLocalTime(); //imprimir la hora local
   // Print ESP32 Local IP Address
   Serial.println(WiFi.localIP());
   // Route for root / web page
